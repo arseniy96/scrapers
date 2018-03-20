@@ -16,13 +16,13 @@ records = ["УИК",
            "Предварительные сведения об участии избирателей в выборах",
            "Итоги голосования"]
 
-CSV.open("election_results_spb3.csv", "w") do |csv_data|
+CSV.open("election_results_spb4.csv", "w") do |csv_data|
   csv_data << records
 
   select1 = browser.select_list(name: 'gs')
   submit1 = browser.button(name: 'go')
   select1.options.each_with_index do |option1, i|
-    if i > 16
+    if i > 24
       select1.select option1.text
       submit1.click # go to ТИК
 
