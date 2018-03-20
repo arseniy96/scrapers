@@ -16,38 +16,43 @@ records = ["УИК",
            "Предварительные сведения об участии избирателей в выборах",
            "Итоги голосования"]
 
-CSV.open("election_results.csv", "w") do |csv_data|
+CSV.open("election_results_spb3.csv", "w") do |csv_data|
   csv_data << records
 
-  sel = browser.select_list(name: 'gs')
+  select1 = browser.select_list(name: 'gs')
   submit1 = browser.button(name: 'go')
-  sel.select "12 Территориальная избирательная комиссия №12"
-  submit1.click # go to ТИК
+  select1.options.each_with_index do |option1, i|
+    if i > 16
+      select1.select option1.text
+      submit1.click # go to ТИК
 
-  select = browser.select_list(name: 'gs')
-  submit2 = browser.button(name: 'go')
-  select.options.each_with_index do |option, i|
-    unless i == 0
-      row = []
-      uik = option.text.split(' ').first
-      row << uik
-      select.select option.text
-      submit2.click # go to УИК
+      select2 = browser.select_list(name: 'gs')
+      submit2 = browser.button(name: 'go')
+      select2.options.each_with_index do |option2, j|
+        unless j == 0
+          row = []
+          uik = option2.text.split(' ').first
+          row << uik
+          select2.select option2.text
+          submit2.click # go to УИК
 
-      browser.trs(class: 'trReport').each_with_index do |tr, i|
-        if i != 0 and i != 5
-          tr.td.link.click
-          if i < 5
-            row << browser.table(id: 'table-1').tbody.tr.td.text.to_s
-          elsif i == 6
-            row << browser.tables.last.inner_html.to_s
-          else
-            row << browser.tables[8].inner_html.to_s
+          browser.trs(class: 'trReport').each_with_index do |tr, k|
+            if k != 0 and k != 5
+              tr.td.link.click
+              if k < 5
+                row << browser.table(id: 'table-1').tbody.tr.td.text.to_s
+              elsif k == 6
+                row << browser.tables.last.inner_html.to_s
+              else
+                row << browser.tables[8].inner_html.to_s
+              end
+              browser.back
+            end
           end
+          csv_data << row
           browser.back
         end
       end
-      csv_data << row
       browser.back
     end
   end
